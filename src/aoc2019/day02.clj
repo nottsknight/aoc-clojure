@@ -26,4 +26,4 @@
                   (aset-int arr 2 2)
                   (run-intcode 0 arr)))))
 
-(println (part1 "data/day02.txt"))
+(println (part1 "data/2019/day02.txt"))

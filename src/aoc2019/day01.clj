@@ -24,5 +24,5 @@
        (map (fn [f] (+ f (fuel-for-fuel f))))
        (sum)))
 
-(println (part1 "data/day01.txt"))
-(println (part2 "data/day01.txt"))
+(println (part1 "data/2019/day01.txt"))
+(println (part2 "data/2019/day01.txt"))
