@@ -18,12 +18,17 @@
            (run-intcode (+ idx 4)))
     99 (aget prog 0)))
 
+(defn init-array [arr]
+  (do 
+    (aset-int arr 1 12)
+    (aset-int arr 2 2)
+    arr))
+
 (defn part1 [file]
   (->> (get-input-commas file)
        (map to-int)
        (int-array)
-       (fn [arr] ((aset-int arr 1 12)
-                  (aset-int arr 2 2)
-                  (run-intcode 0 arr)))))
+       (init-array)
+       (run-intcode 0)))
 
 (println (part1 "data/2019/day02.txt"))
