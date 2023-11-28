@@ -1,37 +1,37 @@
 (ns aoc.graphs
+  (:require [clojure.core.matrix :as ccm])
   (:gen-class))
 
-(defrecord Graph [edges])
+(defrecord Graph [vertices adj-matrix])
 
-(defn new-graph []
-  (Graph. (hash-map)))
+(defn new-graph [vertices]
+  (let 
+    [data (for [_ vertices] (for [_ vertices] nil))]
+    (Graph. vertices (ccm/matrix data))))
 
-(defn has-vertex? [graph vertex]
-  (contains? (:edges graph) vertex))
+(defn- edge-index [graph v]
+  (.indexOf (:vertices graph) v))
 
-(defn neighbours [graph vertex]
-  (get (:edges graph) vertex))
+(defn set-edge [graph src dest w]
+  (let [m (:adj-matrix graph)
+        i (edge-index graph src)
+        j (edge-index graph dest)]
+    (->> (ccm/mset m i j w)
+         (assoc graph :adj-matrix))))
+
+(defn get-edge [graph src dest]
+  (if (= src dest)
+    0
+    (let [i (edge-index graph src)
+          j (edge-index graph dest)]
+      (ccm/mget (:adj-matrix graph) i j))))
 
 (defn has-edge? [graph src dest]
-  (if-not (has-vertex? graph src)
-    false
-    (contains? (neighbours graph src) dest)))
+  (not= (get-edge graph src dest) nil))
 
-(defn add-vertex [graph v]
-  (->> (hash-set)
-       (assoc (:edges graph) v)
-       (assoc graph :edges)))
-
-(defn add-edge [graph src dest]
-  (if-not (has-vertex? graph src)
-    (throw (IllegalArgumentException. 
-             (format "Cannot create edge, src vertex %s does not exist" src)))
-    (let [edges (neighbours graph src)]
-      (->> (conj edges dest)
-           (assoc (:edges graph) src)
-           (assoc graph :edges)))))
-
-(defn add-edge-undirected [graph v1 v2]
-  (-> graph
-      (add-edge v1 v2)
-      (add-edge v2 v1)))
+(defn neighbours [graph v]
+  (for [v1 (:vertices graph) 
+        :when (and
+                (not= v v1) 
+                (has-edge? graph v v1))] 
+    v1))

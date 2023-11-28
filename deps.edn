@@ -1,1 +1,3 @@
-{:paths ["src" "classes"]}
+{:paths ["src" "classes"]
+ :deps
+  {net.mikera/core.matrix {:mvn/version "0.63.0"}}}
