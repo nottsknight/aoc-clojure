@@ -11,17 +11,25 @@
 (defn calibration-value [chars]
   (+ (* 10 (first chars)) (last chars)))
 
-(defn replace-digit-words [str]
-  (-> str
-      (string/replace "one" "1")
-      (string/replace "two" "2")
-      (string/replace "three" "3")
-      (string/replace "four" "4")
-      (string/replace "five" "5")
-      (string/replace "six" "6")
-      (string/replace "seven" "7")
-      (string/replace "eight" "8")
-      (string/replace "nine" "9")))
+(defn replace-digit-word [^String instr]
+  (cond
+    (string/starts-with? instr "one") [\1 2]
+    (string/starts-with? instr "two") [\2 2]
+    (string/starts-with? instr "three") [\3 4]
+    (string/starts-with? instr "four") [\4 3]
+    (string/starts-with? instr "five") [\5 3]
+    (string/starts-with? instr "six") [\6 2]
+    (string/starts-with? instr "seven") [\7 4]
+    (string/starts-with? instr "eight") [\8 4]
+    (string/starts-with? instr "nine") [\9 3]
+    :else [(first instr) 1]))
+
+(defn replace-digit-words [^String instr]
+  (if (empty? instr)
+    ""
+    (let [[c w] (replace-digit-word instr)
+          str1 (apply str (drop w instr))]
+      (cons c (replace-digit-words str1)))))
 
 (defn part1 [file]
   (->> (get-input-lines file)
