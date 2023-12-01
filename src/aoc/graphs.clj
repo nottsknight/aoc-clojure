@@ -1,5 +1,6 @@
 (ns aoc.graphs
   (:require [clojure.core.matrix :as ccm])
+  (:require [clojure.data.priority-map :as pm])
   (:gen-class))
 
 (defrecord Graph [vertices adj-matrix])
@@ -8,6 +9,9 @@
   (let 
     [data (for [_ vertices] (for [_ vertices] nil))]
     (Graph. vertices (ccm/matrix data))))
+
+(defn has-vertex? [graph v]
+  (contains? (:vertices graph) v))
 
 (defn- edge-index [graph v]
   (.indexOf (:vertices graph) v))
@@ -18,6 +22,9 @@
         j (edge-index graph dest)]
     (->> (ccm/mset m i j w)
          (assoc graph :adj-matrix))))
+
+(defn del-edge [graph src dest]
+  (set-edge graph src dest nil))
 
 (defn get-edge [graph src dest]
   (if (= src dest)
@@ -35,3 +42,7 @@
                 (not= v v1) 
                 (has-edge? graph v v1))] 
     v1))
+
+(defn neighbour-weights [graph v]
+  (let [vs (neighbours graph v)]
+    (mapv (fn [v1] [v1 (get-edge graph v v1)]) vs)))
